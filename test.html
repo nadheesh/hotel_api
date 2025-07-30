@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .endpoint {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .response {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .url {
+            color: #0066cc;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hotel API Test Interface</h1>
+    <p>This page provides a simple interface to test the Hotel API endpoints.</p>
+
+    <div class="endpoint">
+        <h3>1. Health Check</h3>
+        <p><strong>GET</strong> <span class="url">/healthcheck</span></p>
+        <button onclick="testEndpoint('/healthcheck', 'health-response')">Test</button>
+        <div id="health-response" class="response"></div>
+    </div>
+
+    <div class="endpoint">
+        <h3>2. Search Hotels</h3>
+        <p><strong>GET</strong> <span class="url">/hotels/search</span></p>
+        <button onclick="testEndpoint('/hotels/search?destination=Miami&minRating=4.0', 'search-response')">Search Miami Hotels (Rating ≥ 4.0)</button>
+        <button onclick="testEndpoint('/hotels/search?minPrice=100&maxPrice=200&sortBy=price_low', 'search-response')">Price Range $100-200</button>
+        <div id="search-response" class="response"></div>
+    </div>
+
+    <div class="endpoint">
+        <h3>3. Hotel Details</h3>
+        <p><strong>GET</strong> <span class="url">/hotels/{hotelId}</span></p>
+        <button onclick="testEndpoint('/hotels/hotel_001', 'details-response')">Grand Palace Hotel</button>
+        <button onclick="testEndpoint('/hotels/hotel_002', 'details-response')">Seaside Resort</button>
+        <div id="details-response" class="response"></div>
+    </div>
+
+    <div class="endpoint">
+        <h3>4. Room Availability</h3>
+        <p><strong>GET</strong> <span class="url">/hotels/{hotelId}/availability</span></p>
+        <button onclick="testEndpoint('/hotels/hotel_001/availability?checkInDate=2024-08-01&checkOutDate=2024-08-05&guests=2', 'availability-response')">Check Availability</button>
+        <div id="availability-response" class="response"></div>
+    </div>
+
+    <div class="endpoint">
+        <h3>5. Nearby Attractions</h3>
+        <p><strong>GET</strong> <span class="url">/hotels/{hotelId}/attractions</span></p>
+        <button onclick="testEndpoint('/hotels/hotel_001/attractions', 'attractions-response')">NYC Attractions</button>
+        <button onclick="testEndpoint('/hotels/hotel_002/attractions', 'attractions-response')">Miami Attractions</button>
+        <div id="attractions-response" class="response"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:9090';
+        
+        async function testEndpoint(endpoint, responseElementId) {
+            const responseElement = document.getElementById(responseElementId);
+            responseElement.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch(API_BASE + endpoint);
+                const data = await response.json();
+                responseElement.innerHTML = `
+                    <strong>Status:</strong> ${response.status}<br>
+                    <strong>Response:</strong><br>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                responseElement.innerHTML = `
+                    <strong>Error:</strong> ${error.message}
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
